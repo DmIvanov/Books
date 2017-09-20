@@ -31,6 +31,8 @@ class ListCell: UITableViewCell {
     func adjust(model: ListCellModel, index: UInt) {
         self.model = model
         titleLabel.text = "\(index + 1). " + model.bookTitle
+        let alternativeColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
+        backgroundColor = (index%2 == 0) ? UIColor.white : alternativeColor
         adjustReadButton()
     }
 
