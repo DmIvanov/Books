@@ -18,6 +18,20 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, List
     
 
     // MARK: - Lyfecycle
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(booksRefreshed),
+            name: dataServiceBooksRefreshedNotification,
+            object: nil
+        )
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,6 +41,11 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, List
     // MARK: - Public
     func setDataService(ds: DataService) {
         dataModel = ListVCDataModel(dataService: ds)
+    }
+
+    @objc func booksRefreshed() {
+        dataModel.refreshBooksArray()
+        tableView.reloadData()
     }
 
 
@@ -50,7 +69,7 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, List
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListCellId", for: indexPath) as! ListCell
         cell.delegate = self
         if let model = dataModel.model(index: indexPath.row) {
-            cell.adjust(model: model)
+            cell.adjust(model: model, index: UInt(indexPath.row))
         }
         return cell
     }

@@ -10,6 +10,7 @@ import UIKit
 
 class DetailVC: UIViewController {
 
+    // MARK: - Properties
     private var dataModel: DetailVCDataModel!
 
     @IBOutlet private var imageView: UIImageView!
@@ -20,6 +21,8 @@ class DetailVC: UIViewController {
     @IBOutlet private var descriptionLabel: UILabel!
     @IBOutlet private var ratingLabel: UILabel!
 
+
+    // MARK: - Lyfecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         title = dataModel.title
@@ -35,6 +38,8 @@ class DetailVC: UIViewController {
         }
     }
 
+
+    // MARK: - Public
     func setDataService(ds: DataService) {
         dataModel = DetailVCDataModel(dataService: ds)
     }
@@ -42,4 +47,9 @@ class DetailVC: UIViewController {
     func setTheBook(book: Book) {
         dataModel.setTheBook(book: book)
     }
+
+    // MARK: - Private
+
+
+    // MARK: - Actions
 }

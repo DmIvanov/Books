@@ -19,7 +19,7 @@ class ListVCDataModel {
     // MARK: - Lyfecycle
     init(dataService: DataService) {
         self.dataService = dataService
-        self.booksToDisplay = dataService.books
+        refreshBooksArray()
     }
 
 
@@ -30,18 +30,15 @@ class ListVCDataModel {
 
     func model(index: Int) -> ListCellModel? {
         guard index >= 0 && index < booksToDisplay.count else {return nil}
+        if booksToDisplay.count - index < 5 {
+            tryToLoadMore()
+        }
         return ListCellModel(book: booksToDisplay[index])
     }
 
     func changeTopRated() {
         justTopRated = !justTopRated
-        if justTopRated {
-            booksToDisplay = dataService.books.filter({ (book) -> Bool in
-                book.averageRating >= 4.0
-            })
-        } else {
-            booksToDisplay = dataService.books
-        }
+        refreshBooksArray()
     }
 
     func changeBookRead(bookId: String) {
@@ -55,8 +52,18 @@ class ListVCDataModel {
         return resultBook
     }
 
+    func refreshBooksArray() {
+        if justTopRated {
+            booksToDisplay = dataService.books.filter({ (book) -> Bool in
+                book.averageRating >= 4.0
+            })
+        } else {
+            booksToDisplay = dataService.books
+        }
+    }
+
     // MARK: - Private
-
-
-    // MARK: - Actions
+    private func tryToLoadMore() {
+        dataService.loadMoreBooks()
+    }
 }

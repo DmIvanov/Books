@@ -8,6 +8,8 @@
 
 import Foundation
 
+let dataServiceBooksRefreshedNotification = NSNotification.Name(rawValue: "dataServiceBooksRefreshedNotification")
+
 
 class DataService: NSObject {
 
@@ -22,12 +24,14 @@ class DataService: NSObject {
     private var currentQuery: String = defaultQuery
     private var totalAmount: UInt?
     private var lastLoadedIdx: UInt?
+    private var loading = false
 
 
     // MARK: - Lyfecycle
     override init() {
         super.init()
-        retrieveBooks()
+        readBooksIds = DataStorage.getReadBooksIds()
+        makeAPIRequest()
     }
 
 
@@ -46,36 +50,32 @@ class DataService: NSObject {
         }
     }
 
+    func loadMoreBooks() {
+        makeAPIRequest()
+    }
+
 
     // MARK: - Private
     private func makeAPIRequest() {
         let startIndex = (lastLoadedIdx == nil) ? 0 : lastLoadedIdx! + 1
+        if loading {
+            return
+        } else {
+            loading = true
+        }
         apiClient.getBooks(query: currentQuery, startIdx: startIndex, amount: defaultBatch) { [weak self] (response, error) in
             guard let strongSelf = self else {return}
+            strongSelf.loading = false
             guard let respDict = response as? Dictionary<String, Any> else {return}
             guard let itemsArray = respDict["items"] as? [Dictionary<String, Any>] else {return}
             strongSelf.totalAmount = respDict["totalItems"] as? UInt
-            let books = DataService.booksFromDictArray(array: itemsArray)
-            print("")
+            let newBooks = DataService.booksFromDictArray(array: itemsArray)
+            strongSelf.markReadBooks(booksArray: newBooks)
+            strongSelf.addNewBooks(newBooks: newBooks)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: dataServiceBooksRefreshedNotification, object: nil)
+            }
         }
-    }
-
-    private func retrieveBooks() {
-        let pathToJSON = Bundle.main.path(forResource: "books", ofType: "json")
-        let jsonData = NSData(contentsOfFile: pathToJSON!)! as Data
-        do {
-            let json = try JSONSerialization.jsonObject(with: jsonData, options: JSONSerialization.ReadingOptions.mutableContainers) as! Dictionary<String, Any>
-            let items = json["items"] as! [Dictionary<String, Any>]
-            books = DataService.booksFromDictArray(array: items).sorted(by: { (book1, book2) -> Bool in
-                book1.title.compare(book2.title) == ComparisonResult.orderedAscending
-            })
-            readBooksIds = DataStorage.getReadBooksIds()
-            markReadBooks()
-        } catch {
-            print("Error. Book retrieval failed")
-            books = [Book]()
-        }
-
     }
 
     private static func booksFromDictArray(array: [Dictionary<String, Any>]) -> [Book] {
@@ -88,9 +88,9 @@ class DataService: NSObject {
         return result
     }
 
-    private func markReadBooks() {
+    private func markReadBooks(booksArray: [Book]) {
         for bookId in readBooksIds {
-            let bookToChange = books.filter { (book) -> Bool in
+            let bookToChange = booksArray.filter { (book) -> Bool in
                 book.id == bookId
                 }.first
             if bookToChange != nil {
@@ -112,5 +112,10 @@ class DataService: NSObject {
             readBooksIds.remove(at: idx!)
         }
         DataStorage.saveReadBooks(ids: readBooksIds)
+    }
+
+    private func addNewBooks(newBooks: [Book]) {
+        books.append(contentsOf: newBooks)
+        lastLoadedIdx = UInt(books.count - 1)
     }
 }

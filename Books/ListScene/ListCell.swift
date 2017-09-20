@@ -28,9 +28,9 @@ class ListCell: UITableViewCell {
 
 
     // MARK: - Public
-    func adjust(model: ListCellModel) {
+    func adjust(model: ListCellModel, index: UInt) {
         self.model = model
-        titleLabel.text = model.bookTitle
+        titleLabel.text = "\(index + 1). " + model.bookTitle
         adjustReadButton()
     }
 
