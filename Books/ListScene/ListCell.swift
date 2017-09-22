@@ -16,6 +16,7 @@ class ListCell: UITableViewCell {
 
     private(set) var model: ListCellModel!
 
+    @IBOutlet private var indexLabel: UILabel!
     @IBOutlet private var titleLabel: UILabel!
     @IBOutlet private var readButton: UIButton!
 
@@ -28,11 +29,12 @@ class ListCell: UITableViewCell {
 
 
     // MARK: - Public
-    func adjust(model: ListCellModel, index: UInt) {
+    func adjust(model: ListCellModel) {
         self.model = model
-        titleLabel.text = "\(index + 1). " + model.bookTitle
+        titleLabel.text = model.title
+        indexLabel.text = "\(model.index). "
         let alternativeColor = UIColor(red: 0.95, green: 0.95, blue: 0.95, alpha: 1)
-        backgroundColor = (index%2 == 0) ? UIColor.white : alternativeColor
+        backgroundColor = (model.index%2 == 0) ? UIColor.white : alternativeColor
         adjustReadButton()
     }
 
@@ -65,12 +67,14 @@ protocol ListCellDelegate: class {
 struct ListCellModel {
 
     let bookID: String
-    let bookTitle: String
+    let title: String
+    let index: UInt
     var read: Bool
 
-    init(book: Book) {
+    init(book: Book, idx: UInt) {
         bookID = book.id
-        bookTitle = book.title
+        title = book.title
         read = book.read
+        index = idx
     }
 }

@@ -30,10 +30,10 @@ class ListVCDataModel {
 
     func model(index: Int) -> ListCellModel? {
         guard index >= 0 && index < booksToDisplay.count else {return nil}
-        if booksToDisplay.count - index < 5 {
+        if booksToDisplay.count - index < 10 {
             tryToLoadMore()
         }
-        return ListCellModel(book: booksToDisplay[index])
+        return ListCellModel(book: booksToDisplay[index], idx: UInt(index))
     }
 
     func changeTopRated() {
@@ -62,8 +62,13 @@ class ListVCDataModel {
         }
     }
 
+    func loadBooks(query: String) {
+        dataService.loadBooks(query: query)
+    }
+
     // MARK: - Private
     private func tryToLoadMore() {
         dataService.loadMoreBooks()
     }
 }
+

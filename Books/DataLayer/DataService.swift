@@ -14,7 +14,7 @@ let dataServiceBooksRefreshedNotification = NSNotification.Name(rawValue: "dataS
 class DataService: NSObject {
 
     static private let defaultQuery = "a"
-    private let defaultBatch: UInt = 20
+    private let defaultBatch: UInt = 30
 
     // MARK: - Properties
     private(set) var books = [Book]()
@@ -54,18 +54,34 @@ class DataService: NSObject {
         makeAPIRequest()
     }
 
+    func loadBooks(query: String) {
+        makeAPIRequest(query: query)
+    }
+
 
     // MARK: - Private
-    private func makeAPIRequest() {
+    private func makeAPIRequest(query: String? = nil) {
         let startIndex = (lastLoadedIdx == nil) ? 0 : lastLoadedIdx! + 1
         if loading {
             return
         } else {
             loading = true
         }
-        apiClient.getBooks(query: currentQuery, startIdx: startIndex, amount: defaultBatch) { [weak self] (response, error) in
+        var searchQuery: String
+        if query == nil {
+            searchQuery = currentQuery
+        } else if (query == "") {
+            searchQuery = DataService.defaultQuery
+        } else {
+            searchQuery = query!
+        }
+        apiClient.getBooks(query: searchQuery, startIdx: startIndex, amount: defaultBatch) { [weak self] (response, error) in
             guard let strongSelf = self else {return}
             strongSelf.loading = false
+            if searchQuery != strongSelf.currentQuery {
+                strongSelf.currentQuery = searchQuery
+                strongSelf.resetBooks()
+            }
             guard let respDict = response as? Dictionary<String, Any> else {return}
             guard let itemsArray = respDict["items"] as? [Dictionary<String, Any>] else {return}
             strongSelf.totalAmount = respDict["totalItems"] as? UInt
@@ -117,5 +133,11 @@ class DataService: NSObject {
     private func addNewBooks(newBooks: [Book]) {
         books.append(contentsOf: newBooks)
         lastLoadedIdx = UInt(books.count - 1)
+    }
+
+    private func resetBooks() {
+        books = [Book]()
+        lastLoadedIdx = nil
+        totalAmount = nil
     }
 }

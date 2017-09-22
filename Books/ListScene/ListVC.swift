@@ -9,11 +9,16 @@
 import UIKit
 
 
-class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, ListCellDelegate {
+class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchResultsUpdating, UISearchBarDelegate, ListCellDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        
+    }
+
 
     // MARK: - Properties
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var rightBarButton: UIBarButtonItem!
+    var searchController: UISearchController!
     private var dataModel: ListVCDataModel!
     
 
@@ -34,7 +39,7 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, List
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        configureSearchController()
     }
 
 
@@ -50,6 +55,16 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, List
 
 
     // MARK: - Private
+    func configureSearchController() {
+        searchController = UISearchController(searchResultsController: nil)
+        searchController.searchResultsUpdater = self
+        searchController.dimsBackgroundDuringPresentation = true
+        searchController.searchBar.placeholder = "Search here..."
+        searchController.searchBar.delegate = self
+        searchController.searchBar.sizeToFit()
+
+        tableView.tableHeaderView = searchController.searchBar
+    }
 
 
     // MARK: - Actions
@@ -69,7 +84,7 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, List
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListCellId", for: indexPath) as! ListCell
         cell.delegate = self
         if let model = dataModel.model(index: indexPath.row) {
-            cell.adjust(model: model, index: UInt(indexPath.row))
+            cell.adjust(model: model)
         }
         return cell
     }
@@ -84,6 +99,24 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, List
             }
         }
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+
+
+    // MARK: - UISearchBarDelegate
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        dataModel.loadBooks(query: searchText)
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchController.searchBar.resignFirstResponder
+    }
+
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+
     }
 
 
