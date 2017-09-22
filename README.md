@@ -3,9 +3,11 @@ Sample project.
 The project is made under XCode 9 (9A235)
 
 Here is a simple app where user can interact with Google Books API.
+https://developers.google.com/books
+https://www.googleapis.com/books/v1/volumes
 
 Functionality:
-- download books from API with pagination (https://www.googleapis.com/books/v1/volumes)
+- download books from API with pagination
 - detail view of the book
 - search for the specific query
 - filter books in the list (according to the rating)
