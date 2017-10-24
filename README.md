@@ -2,7 +2,7 @@
 
 Sample project.
 
-The project is made under XCode 9 (9A235)
+The project is built under XCode 9, Swift 4
 
 Here is a simple app where user can interact with Google Books API.
   - https://developers.google.com/books
