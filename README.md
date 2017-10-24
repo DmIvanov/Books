@@ -10,11 +10,12 @@ Here is a simple app where user can interact with Google Books API.
 
 
 ### Functionality:
-- download books from API with pagination
-- detail view of the book
-- search for the specific query
+- downloading books from API 
+- displaying books in table view (list) with pagination
+- search for the specific query in the list
 - filter books in the list (according to the rating)
 - books in the list can be marked/unmarked as read (this info is saved locally)
+- detail view of the book
 
 
 ### Parts of the app:
