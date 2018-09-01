@@ -41,7 +41,7 @@ all the business logic, data formatting and processing, interacting with the Dat
 ### Some used approaches:
   - Modularity. Each piece of functionality is incapsulated in a proper class (set of classes).
   - Clear objects' responsibilities (Not everywhere it's one responsibility, but not more than couple of them)
-  - Dependency Injection. Most of the objects are instantiated using DI and could be easily tested (with a help of moch-objects)
+  - Dependency Injection. Most of the objects are instantiated using DI and could be easily tested (with a help of mock-objects)
 
 
 ### TODO:
