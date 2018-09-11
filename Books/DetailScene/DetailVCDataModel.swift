@@ -12,6 +12,7 @@ class DetailVCDataModel {
 
     // MARK: - Properties
     private var dataService: DataService
+    private weak var delegate: DetailSceneDelegate?
 
     private(set) var imageURL: String!
     private(set) var title: String!
@@ -23,8 +24,10 @@ class DetailVCDataModel {
 
 
     // MARK: - Lyfecycle
-    init(dataService: DataService) {
+    init(dataService: DataService, book: Book, delegate: DetailSceneDelegate) {
         self.dataService = dataService
+        self.delegate = delegate
+        setTheBook(book: book)
     }
 
 
@@ -46,3 +49,6 @@ class DetailVCDataModel {
         rating = book.averageRating > 0 ? "Book's rating: \(book.averageRating)" : ""
     }
 }
+
+
+protocol DetailSceneDelegate: AnyObject {}

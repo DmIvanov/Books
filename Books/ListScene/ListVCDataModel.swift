@@ -11,14 +11,20 @@ import Foundation
 class ListVCDataModel {
 
     // MARK: - Properties
-    private(set) var dataService: DataService
     private var booksToDisplay = [Book]()
+
+    private weak var delegate: ListSceneDelegate?
+    private weak var viewController: ListVC?
+
+    private(set) var dataService: DataService
     private(set) var justTopRated = false
 
 
     // MARK: - Lyfecycle
-    init(dataService: DataService) {
+    init(dataService: DataService, viewController: ListVC, delegate: ListSceneDelegate) {
         self.dataService = dataService
+        self.viewController = viewController
+        self.delegate = delegate
         refreshBooksArray()
     }
 
@@ -66,9 +72,18 @@ class ListVCDataModel {
         dataService.loadBooks(query: query)
     }
 
+    func bookWasChosen(index: Int) {
+        guard let model = model(index: index) else { return }
+        guard let book = book(forId: model.bookID) else { return }
+        delegate?.bookWasChosen(book: book)
+    }
     // MARK: - Private
     private func tryToLoadMore() {
         dataService.loadMoreBooks()
     }
 }
 
+
+protocol ListSceneDelegate: AnyObject {
+    func bookWasChosen(book: Book)
+}

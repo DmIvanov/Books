@@ -40,8 +40,8 @@ class DetailVC: UIViewController {
 
 
     // MARK: - Public
-    func setDataService(ds: DataService) {
-        dataModel = DetailVCDataModel(dataService: ds)
+    func setDataModel(dataModel: DetailVCDataModel) {
+        self.dataModel = dataModel
     }
 
     func setTheBook(book: Book) {

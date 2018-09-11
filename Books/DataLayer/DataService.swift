@@ -11,7 +11,7 @@ import Foundation
 let dataServiceBooksRefreshedNotification = NSNotification.Name(rawValue: "dataServiceBooksRefreshedNotification")
 
 
-class DataService: NSObject {
+class DataService {
 
     static private let defaultQuery = "a"
     private let defaultBatch: UInt = 30
@@ -28,8 +28,7 @@ class DataService: NSObject {
 
 
     // MARK: - Lyfecycle
-    override init() {
-        super.init()
+    init() {
         readBooksIds = DataStorage.getReadBooksIds()
         makeAPIRequest()
     }

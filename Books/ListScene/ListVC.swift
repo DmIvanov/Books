@@ -19,6 +19,7 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISe
     @IBOutlet private var tableView: UITableView!
     @IBOutlet private var rightBarButton: UIBarButtonItem!
     var searchController: UISearchController!
+
     private var dataModel: ListVCDataModel!
     
 
@@ -44,8 +45,8 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISe
 
 
     // MARK: - Public
-    func setDataService(ds: DataService) {
-        dataModel = ListVCDataModel(dataService: ds)
+    func setDataModel(dataModel: ListVCDataModel) {
+        self.dataModel = dataModel
     }
 
     @objc func booksRefreshed() {
@@ -90,15 +91,8 @@ class ListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISe
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if let model = dataModel.model(index: indexPath.row) {
-            let detailVC = ViewControllerFactory.detailVC()
-            detailVC.setDataService(ds: dataModel.dataService)
-            if let book = dataModel.book(forId: model.bookID) {
-                detailVC.setTheBook(book: book)
-                navigationController?.pushViewController(detailVC, animated: true)
-            }
-        }
         tableView.deselectRow(at: indexPath, animated: true)
+        dataModel.bookWasChosen(index: indexPath.row)
     }
 
 

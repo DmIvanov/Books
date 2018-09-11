@@ -14,11 +14,25 @@ class ViewControllerFactory {
         return UIStoryboard(name: "Main", bundle: nil)
     }
 
-    class func listVC() -> ListVC {
-        return mainStoryboard().instantiateViewController(withIdentifier: "ListVC") as! ListVC
+    class func listVC(dataService: DataService, delegate: ListSceneDelegate) -> ListVC {
+        let listVC = mainStoryboard().instantiateViewController(withIdentifier: "ListVC") as! ListVC
+        let listDataModel = ListVCDataModel(
+            dataService: dataService,
+            viewController: listVC,
+            delegate: delegate
+        )
+        listVC.setDataModel(dataModel: listDataModel)
+        return listVC
     }
 
-    class func detailVC() -> DetailVC {
-        return mainStoryboard().instantiateViewController(withIdentifier: "DetailVC") as! DetailVC
+    class func detailVC(dataService: DataService, book: Book, delegate: DetailSceneDelegate) -> DetailVC {
+        let vc = mainStoryboard().instantiateViewController(withIdentifier: "DetailVC") as! DetailVC
+        let detailDataModel = DetailVCDataModel(
+            dataService: dataService,
+            book: book,
+            delegate: delegate
+        )
+        vc.setDataModel(dataModel: detailDataModel)
+        return vc
     }
 }
